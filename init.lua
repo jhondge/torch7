@@ -10,7 +10,7 @@ if not table.unpack then
 end
 
 require "paths"
-paths.require "libtorch"
+--paths.require "libtorch"
 
 -- Keep track of all thread local variables torch.
 -- if a Lua VM is passed to another thread thread local
