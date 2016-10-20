@@ -132,10 +132,17 @@ SET(src
   THLogAdd.c THRandom.c THFile.c THDiskFile.c THMemoryFile.c THAtomic.c)
 
 SET(src ${src} ${hdr} ${simd})
-ADD_LIBRARY(TH SHARED ${src})
+
+IF(IOS_BUILD)
+  ADD_LIBRARY(TH STATIC ${src})
+ELSE(IOS_BUILD)
+  ADD_LIBRARY(TH SHARED ${src})
+ENDIF(IOS_BUILD)
+
 if(BUILD_STATIC)
   ADD_LIBRARY(TH_static STATIC ${src})
 endif()
+
 
 CHECK_C_SOURCE_RUNS("
 #include <stdatomic.h>
