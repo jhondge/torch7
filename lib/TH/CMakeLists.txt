@@ -129,7 +129,7 @@ SET(hdr
 
 SET(src
   THGeneral.c THAllocator.c THStorage.c THTensor.c THBlas.c THLapack.c
-  THLogAdd.c THRandom.c THFile.c THDiskFile.c THMemoryFile.c THAtomic.c)
+  THLogAdd.c THRandom.c THFile.c THDiskFile.c THMemoryFile.c THAtomic.c THVector.c)
 
 SET(src ${src} ${hdr} ${simd})
 IF(IOS_BUILD)
@@ -308,6 +308,7 @@ INSTALL(FILES
   THTensorDimApply.h
   THTensorMacros.h
   THVector.h
+  THVector.c
   THAtomic.h
   DESTINATION "${TH_INSTALL_INCLUDE_SUBDIR}/TH")
 
@@ -332,9 +333,24 @@ INSTALL(FILES
   generic/THTensorMath.h
   generic/THTensorRandom.c
   generic/THTensorRandom.h
-  generic/THVector.c
+  generic/THVector.h
+  generic/THVectorDefault.c
+  generic/THVectorDispatch.c
   DESTINATION "${TH_INSTALL_INCLUDE_SUBDIR}/TH/generic")
 
+#INSTALL(FILES
+#  generic/simd/common_simd.h
+#  generic/simd/convolve.c
+#  generic/simd/convolve.h
+#  generic/simd/convolve5x5_avx.c
+#  generic/simd/convolve5x5_sse.c
+#  generic/simd/simd.h
+#  DESTINATION "${TH_INSTALL_INCLUDE_SUBDIR}/TH/generic/simd")
+
+#INSTALL(FILES
+#  vector/NEON.c
+#  vector/SSE.c
+#  DESTINATION "${TH_INSTALL_INCLUDE_SUBDIR}/TH/vector")
 
 IF (WIN32 AND NOT CYGWIN)
   SET(BLAS_INSTALL_LIBRARIES "OFF"
