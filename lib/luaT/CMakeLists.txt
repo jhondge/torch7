@@ -7,13 +7,17 @@ INCLUDE_DIRECTORIES(${LUA_INCDIR})
 IF(LUALIB)
   LINK_DIRECTORIES(${LUA_LIBDIR}) # note: must be done before defining target
 ENDIF()
+IF(IOS_BUILD)
+  ADD_LIBRARY(luaT STATIC luaT.h luaT.c)
+ELSE(IOS_BUILD)
+  ADD_LIBRARY(luaT SHARED luaT.h luaT.c)
+ENDIF(IOS_BUILD)
 
-ADD_LIBRARY(luaT SHARED luaT.h luaT.c)
 if(BUILD_STATIC)
   ADD_LIBRARY(luaT_static STATIC luaT.h luaT.c)
 endif()
 
-IF(APPLE)
+IF(APPLE AND NOT IOS_BUILD)
   SET_TARGET_PROPERTIES(luaT PROPERTIES
     LINK_FLAGS "-undefined dynamic_lookup")
 ENDIF()

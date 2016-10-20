@@ -9,12 +9,21 @@ MACRO(ADD_TORCH_PACKAGE package src luasrc)
   IF(NOT "${src}" STREQUAL "")
 
     if ("${src}" MATCHES "cu$" OR "${src}" MATCHES "cu;")
-      CUDA_ADD_LIBRARY(${package} MODULE ${src})
+      IF(IOS_BUILD)
+        CUDA_ADD_LIBRARY(${package} STATIC ${src})
+      ELSE()
+        CUDA_ADD_LIBRARY(${package} MODULE ${src})
+      ENDIF()
       if(BUILD_STATIC)
         CUDA_ADD_LIBRARY(${package}_static STATIC ${src})
       endif()
     else()
-      ADD_LIBRARY(${package} MODULE ${src})
+      IF(IOS_BUILD)
+        ADD_LIBRARY(${package} STATIC ${src})
+      ELSE(IOS_BUILD)
+        ADD_LIBRARY(${package} MODULE ${src})
+      ENDIF(IOS_BUILD)
+      
       if(BUILD_STATIC)
         ADD_LIBRARY(${package}_static STATIC ${src})
       endif()
@@ -26,9 +35,16 @@ MACRO(ADD_TORCH_PACKAGE package src luasrc)
       IMPORT_PREFIX "lib"
       INSTALL_NAME_DIR "@executable_path/${Torch_INSTALL_BIN2CPATH}")
 
-    IF(APPLE)
+    IF(APPLE AND NOT IOS_BUILD)
       SET_TARGET_PROPERTIES(${package} PROPERTIES
         LINK_FLAGS "-undefined dynamic_lookup")
+    ENDIF()
+
+    IF(IOS_BUILD)
+       SET_TARGET_PROPERTIES(${package} PROPERTIES
+        COMPILE_FLAGS "-fPIC")
+       SET_TARGET_PROPERTIES(${package} PROPERTIES
+        PREFIX "lib" IMPORT_PREFIX "lib" OUTPUT_NAME "${package}")
     ENDIF()
 
     if(BUILD_STATIC)
@@ -40,7 +56,8 @@ MACRO(ADD_TORCH_PACKAGE package src luasrc)
 
     INSTALL(TARGETS ${package}
       RUNTIME DESTINATION ${Torch_INSTALL_LUA_CPATH_SUBDIR}
-      LIBRARY DESTINATION ${Torch_INSTALL_LUA_CPATH_SUBDIR})
+      LIBRARY DESTINATION ${Torch_INSTALL_LUA_CPATH_SUBDIR}
+      ARCHIVE DESTINATION ${Torch_INSTALL_LUA_CPATH_SUBDIR})
 
   ENDIF(NOT "${src}" STREQUAL "")
 
